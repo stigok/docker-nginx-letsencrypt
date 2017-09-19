@@ -21,31 +21,20 @@ Inspect the `certbot/Dockerfile` before building the `certbot` image.
 
     $ docker build --tag stigok/certbot certbot/.
 
-Retrieve a test certificate from the staging server
+Retrieve a test certificate from the staging server to verify that this works
 
     $ docker run --rm -v letsencrypt:/letsencrypt stigok/certbot --test-cert -d www.example.com -d example.com
-
-Restart the web server
-
-    $ docker-compose restart
-
-Verify that the cert is working. It is expected that curl returns an invalid certificate because the
-certificate was acquired with the `--test-cert` flag.
-
-    $ curl -vIL example.com
     
-Remove the test certificate
+Delete the test certificate and get a real one
 
     $ docker run -v letsencrypt:/letsencrypt -it --rm --entrypoint certbot delete --config-dir /letsencrypt --test-cert --cert-name stigok/certbot
-
-Fetch a real certificate
-
     $ docker run --rm -v letsencrypt:/letsencrypt stigok/certbot -d www.example.com -d example.com
 
-Restart the web server again and verify
+Remove the `#` from the `nginx.conf` file that sets up the certificate file paths, then restart the web server
 
     $ docker-compose restart
     $ curl -vIL example.com
 
 ## TODO
 - Find a way to ease the pain of having to restart the container on `nginx.conf` changes.
+- Avoid having to comment out the SSL settings for each site. Maybe sites should be their own container, and the frontend just proxy requests to the containers automagically somehow.
