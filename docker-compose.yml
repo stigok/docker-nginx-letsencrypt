@@ -1,0 +1,16 @@
+version: '2'
+
+services:
+  frontline:
+    image: nginx:alpine
+    volumes:
+      - letsencrypt:/letsencrypt
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+
+volumes:
+  letsencrypt:
+    external: true
